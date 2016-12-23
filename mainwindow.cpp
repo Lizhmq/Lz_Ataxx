@@ -13,43 +13,43 @@ MainWindow::MainWindow(QWidget *parent)
     setMaximumSize(720,950);
 
     //font
-    font = QFont("MONACO",18);
-
+    font1 = QFont("Brush Script MT",20);
+    font2 = QFont("Times New Roman",17);
 
     //PVP
     NewPVP = new QPushButton("New PVP",this);
     NewPVP -> setGeometry(20,770,200,50);
-    NewPVP -> setFont(font);
+    NewPVP -> setFont(font2);
     connect(NewPVP, SIGNAL(clicked()), this, SLOT(clean1()));
 
     //PVE
     NewPVE = new QPushButton("New PVE", this);
     NewPVE -> setGeometry(20,840,200,50);
-    NewPVE -> setFont(font);
+    NewPVE -> setFont(font2);
     connect(NewPVE, SIGNAL(clicked()), this, SLOT(clean2()));
 
     //Save
     Save = new QPushButton("Save",this);
     Save -> setGeometry(260,770,200,50);
-    Save -> setFont(font);
+    Save -> setFont(font2);
     connect(Save, SIGNAL(clicked()), this, SLOT(save()));
 
     //Load
     Load = new QPushButton("Load",this);
     Load -> setGeometry(260,840,200,50);
-    Load -> setFont(font);
+    Load -> setFont(font2);
     connect(Load, SIGNAL(clicked()), this, SLOT(load()));
 
     //Pass
     Pass = new QPushButton("Pass",this);
     Pass -> setGeometry(500,770,200,50);
-    Pass -> setFont(font);
+    Pass -> setFont(font2);
     connect(Pass, SIGNAL(clicked()), this, SLOT(pass()));
 
     //Tips
     Tips = new QPushButton("Tips",this);
     Tips -> setGeometry(500,840,200,50);
-    Tips -> setFont(font);
+    Tips -> setFont(font2);
     connect(Tips, SIGNAL(clicked()), this, SLOT(tips()));
 
 }
@@ -73,7 +73,7 @@ void MainWindow::paintEvent(QPaintEvent *){
     QPen pen;
     pen.setColor(Qt::black);
     painter.setPen(pen);
-    painter.setFont(font);
+    painter.setFont(font1);
 
     //Welcome
     QRectF welcome(0,0,720,40);

@@ -44,7 +44,7 @@ public:
     bool got;
 
 
-    QFont font;
+    QFont font1,font2;
     QPushButton *NewPVP, *NewPVE, *Load, *Save, *Pass, *Tips;
 
 public slots:
