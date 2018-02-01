@@ -12,6 +12,9 @@
 #include <QColor>
 #include <QDebug>
 #include <QMessageBox>
+#include <QTime>
+#include <QCoreApplication>
+#include <iostream>
 
 class MainWindow : public QMainWindow
 {
@@ -39,13 +42,14 @@ public:
     struct way {
         int startx, starty;
         int endx, endy;
-    }valway;
+    } valway;
     int human = -1;
     bool got;
+    bool Easy;
 
 
     QFont font1,font2;
-    QPushButton *NewPVP, *NewPVE, *Load, *Save, *Pass, *Tips;
+    QPushButton *NewPVP, *NewPVE, *Load, *Save, *Pass, *Tips, *Switch;
 
 public slots:
     void win(int blackwin);
@@ -61,7 +65,9 @@ public slots:
     int attempt(Board current, int depth, int alpha, int beta);
     void AI(int chess[][7], int color);
     void tips();
-    void delay();
+    int delay();
+    void sswitch();
     int countall(Board current);
+    void simple_greedy(Board current);
 };
 #endif // MAINWINDOW_H

@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include <iostream>
+
 MainWindow::MainWindow(QWidget *parent)
     :QMainWindow(parent){
     xPressed = yPressed = 100;
@@ -14,43 +14,48 @@ MainWindow::MainWindow(QWidget *parent)
 
     //font
     font1 = QFont("Brush Script MT",20);
-    font2 = QFont("Times New Roman",17);
+    font2 = QFont("Informal Roman",22);
 
     //PVP
     NewPVP = new QPushButton("New PVP",this);
-    NewPVP -> setGeometry(20,770,200,50);
+    NewPVP -> setGeometry(90,770,150,50);
     NewPVP -> setFont(font2);
     connect(NewPVP, SIGNAL(clicked()), this, SLOT(clean1()));
 
     //PVE
     NewPVE = new QPushButton("New PVE", this);
-    NewPVE -> setGeometry(20,840,200,50);
+    NewPVE -> setGeometry(90,840,150,50);
     NewPVE -> setFont(font2);
     connect(NewPVE, SIGNAL(clicked()), this, SLOT(clean2()));
 
     //Save
     Save = new QPushButton("Save",this);
-    Save -> setGeometry(260,770,200,50);
+    Save -> setGeometry(295,770,150,50);
     Save -> setFont(font2);
     connect(Save, SIGNAL(clicked()), this, SLOT(save()));
 
     //Load
     Load = new QPushButton("Load",this);
-    Load -> setGeometry(260,840,200,50);
+    Load -> setGeometry(295,840,150,50);
     Load -> setFont(font2);
     connect(Load, SIGNAL(clicked()), this, SLOT(load()));
 
     //Pass
     Pass = new QPushButton("Pass",this);
-    Pass -> setGeometry(500,770,200,50);
+    Pass -> setGeometry(500,770,150,50);
     Pass -> setFont(font2);
     connect(Pass, SIGNAL(clicked()), this, SLOT(pass()));
 
     //Tips
     Tips = new QPushButton("Tips",this);
-    Tips -> setGeometry(500,840,200,50);
+    Tips -> setGeometry(500,840,150,50);
     Tips -> setFont(font2);
     connect(Tips, SIGNAL(clicked()), this, SLOT(tips()));
+
+    Switch = new QPushButton("Switch", this);
+    Switch -> setGeometry(550, 88, 100, 50);
+    Switch -> setFont(font2);
+    connect(Switch, SIGNAL(clicked()), this, SLOT(sswitch()));
 
 }
 
@@ -79,17 +84,6 @@ void MainWindow::paintEvent(QPaintEvent *){
     QRectF welcome(0,0,720,40);
     painter.drawText(welcome, Qt::AlignHCenter, "Welcome to play Ataxx");
 
-    //board
-    for (int i = 190; i < 800; i += 80) {
-        QPoint u(90, i);
-        QPoint v(650, i);
-        painter.drawLine(u, v);
-    }
-    for (int i = 90; i < 660; i += 80) {
-        QPoint u(i, 190);
-        QPoint v(i, 750);
-        painter.drawLine(u, v);
-    }
     for(int i=1;i<=7;i++){
         QRectF temp(30,110+80*i,40,80);
         char a[2];
@@ -104,6 +98,7 @@ void MainWindow::paintEvent(QPaintEvent *){
         painter.drawText(temp,Qt::AlignCenter,a);
     }
 
+    QPixmap pix[49];
     //count    chess
     QFont font2("MONACO",14);
     QBrush brush;
@@ -111,50 +106,69 @@ void MainWindow::paintEvent(QPaintEvent *){
     brush.setStyle(Qt::SolidPattern);
     brush.setColor(WhiteTurn ? Qt::white : Qt::black);
     painter.setBrush(brush);
-    painter.drawEllipse(150,98,40,40);
-    brush.setColor(0xffdd00);
-    painter.setBrush(brush);
-    painter.drawRect(90+xPressed*80,190+yPressed*80,80,80);
+    painter.drawEllipse(170,98,40,40);
     int count1 = 0;
     int count2 = 0;
-    for(int i=0;i<=6;i++)
-        for(int j=0;j<=6;j++)
-            if(board[i][j]){
-                board[i][j] == 1 ? count1++ : count2++;
-                brush.setColor(board[i][j]==1 ? Qt::black : Qt::white);
-                painter.setBrush(brush);
-                painter.drawEllipse(95+80*i,195+80*j,70,70);
+    for (int i = 0; i < 7; ++i)
+        for (int j = 0; j < 7; ++j) {
+            if (board[i][j] == 0) {
+                pix[i * 7 + j].load("image/10007.png");
             }
+            else if (board[i][j] == 1) {
+                pix[i * 7 + j].load("image/1.png");
+                count1++;
+            }
+            else {
+                pix[i * 7 + j].load("image/2.png");
+                count2++;
+            }
+            painter.drawPixmap(90 + 80 * i, 190 + 80 * j, 80, 80, pix[i * 7 + j]);
+        }
+
+    QFont font4("MV Boli", 15);
     char s1[30]="Black Counts: ",s2[30]="White Counts: ";
-    int l1=strlen(s1),l2=strlen(s2);
+    int l1=(int)strlen(s1),l2=(int)strlen(s2);
     s1[l1]=count1/10+'0';  s1[l1+1]=count1%10+'0'; s1[l1+2]='\0';
     s2[l2]=count2/10+'0';  s2[l2+1]=count2%10+'0'; s2[l2+2]='\0';
-    QRectF text1(20,50,300,30), text2(360,50,300,30);
+    QRectF text1(70,50,300,30), text2(360,50,300,30);
+    painter.setFont(font4);
     painter.drawText(text1,Qt::AlignLeft,s1);
+    painter.setFont(font4);
     painter.drawText(text2,Qt::AlignLeft,s2);
 
-    QFont font3("MONACO",19);
+    QFont font3("MV Boli",19);
     painter.setFont(font3);
-    QRectF text3(40,90,100,50);
+    QRectF text3(60,90,100,50);
     char s3[10]="  Turn: ";
     painter.drawText(text3,Qt::AlignCenter,s3);
+    QRectF text4(300, 90, 150, 50);
+    const char *s4 = "  Level: ";
+    painter.drawText(text4,Qt::AlignLeft,s4);
+    QRectF text5(430, 90, 130, 50);
+    const char *s5 = Easy ? "Easy" : "Normal";
+    painter.drawText(text5,Qt::AlignLeft,s5);
 
-    //available places
-    brush.setColor(0xffffcc);
+    QFont font5("", 10);
+    painter.setFont(font5);;
+    QRectF text6(220, 900, 300, 30);
+    const char *s6 = "copyright © 1926---...    by Lzzz x)";
+    painter.drawText(text6,Qt::AlignCenter,s6);
 
-    painter.setBrush(brush);
-    for(int i=-2;i<=2;i++)
-        for(int j=-2;j<=2;j++){
-            if(xPressed+i<=6&&xPressed+i>=0&&yPressed+j<=6&&yPressed+j>=0&&!board[xPressed+i][yPressed+j])
-                painter.drawRect(90+(xPressed+i)*80,190+(yPressed+j)*80,80,80);
-        }
-    brush.setColor(0xffff77);
-    painter.setBrush(brush);
-    for(int i=-1;i<=1;i++)
-        for(int j=-1;j<=1;j++){
-            if(xPressed+i<=6&&xPressed+i>=0&&yPressed+j<=6&&yPressed+j>=0&&!board[xPressed+i][yPressed+j])
-                painter.drawRect(90+(xPressed+i)*80,190+(yPressed+j)*80,80,80);
-        }
+    // available places
+    for (int i = -2; i <= 2; ++i)
+        for (int j = -2; j <= 2; ++j)
+            if (xPressed + i < 7 && xPressed + i >= 0
+                && yPressed + j < 7 && yPressed + j >= 0
+                && !board[xPressed + i][yPressed + j]) {
+                    int xx = xPressed + i, yy = yPressed + j;
+                    if (xx < 0 || xx >= 7 || yy < 0 || yy >= 7)
+                        continue;
+                    if (abs(i) <= 1 && abs(j) <= 1)
+                        pix[xx * 7 + yy].load("image/10008.png");
+                    else
+                        pix[xx * 7 + yy].load("image/10009.png");
+                    painter.drawPixmap(90 + 80 * xx, 190 + 80 * yy, 80, 80, pix[(xPressed + i) * 7 + yPressed + j]);
+                }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event){
@@ -177,7 +191,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event){
         if(dis > 2||board[x][y])
             return;
         if(dis == 2)
-            board[xPressed][yPressed]=0;\
+            board[xPressed][yPressed]=0;
 
         board[x][y]=WhiteTurn ? -1 : 1;
         for(int i=-1;i<=1;i++)
@@ -342,6 +356,7 @@ void MainWindow::myprocStep(int x0, int y0, int x1, int y1, int color, int chess
 
 int MainWindow::attempt(Board current, int depth, int alpha, int beta) {
     int score;
+//    got = 0;
     if (depth == 0) return cal(current, WhiteTurn ? -1 : 1);
     for (int i = 0; i < 7; i++) {
         for (int j = 0; j < 7; j++) {
@@ -434,7 +449,10 @@ void MainWindow::AI(int chess[7][7], int color){
     Board temp;
     memcpy(temp.chess, chess, sizeof(temp.chess));
     temp.color = color;
-    attempt(temp, ddl, -50, 50);
+    if (Easy)
+        simple_greedy(temp);
+    else
+        attempt(temp, ddl, -50, 50);
     delay();
     if(valway.startx != -1)
         myprocStep(valway.startx,valway.starty,valway.endx,valway.endy,color,chess);
@@ -453,8 +471,12 @@ void MainWindow::tips(){
     update();
 }
 
-void MainWindow::delay(){
-    for(int i = 0;i<2e8;i++);
+int MainWindow::delay(){
+    QTime t;
+    t.start();
+    while(t.elapsed()<650)
+        QCoreApplication::processEvents();
+    return 0;
 }
 
 int MainWindow::countall(Board current) {
@@ -465,3 +487,64 @@ int MainWindow::countall(Board current) {
                 num++;
     return num;
 }
+
+void MainWindow::sswitch()
+{
+    Easy ^= 1;
+    repaint();
+}
+
+void MainWindow::simple_greedy(Board current)
+{
+    int score = -10000;
+    got = 0;
+     for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+            if (current.chess[i][j]) continue;
+            for (int k = 0; k < 8; k++) {
+                int x1 = i + dx1[k], y1 = j + dy1[k];
+                if (x1 >= 0 && x1 < 7 && y1 >= 0 && y1 < 7 && current.chess[x1][y1] == current.color) {
+                    if (!got) {
+                        valway.startx = x1; valway.starty = y1;
+                        valway.endx = i; valway.endy = j;
+                        got = 1;
+                    }
+                    Board temp = current;
+                    myprocStep(x1, y1, i, j, temp.color, temp.chess);
+                    int tmpscore;
+                    if ((tmpscore = cal(temp, temp.color)) > score) {
+                        score = tmpscore;
+                        valway.startx = x1;
+                        valway.starty = y1;
+                        valway.endx = i;
+                        valway.endy = j;
+                        got = 1;
+                    }
+                }
+            }
+            for (int k = 0; k < 16; k++) {
+                int x1 = i + dx2[k], y1 = j + dy2[k];
+                if (x1 >= 0 && x1 < 7 && y1 >= 0 && y1 < 7 && current.chess[x1][y1] == current.color) {
+                    if (!got) {
+                        valway.startx = x1; valway.starty = y1;
+                        valway.endx = i; valway.endy = j;
+                        got = 1;
+                    }
+                    Board temp = current;
+                    myprocStep(x1, y1, i, j, temp.color, temp.chess);
+                    int tmpscore;
+                    if ((tmpscore = cal(temp, temp.color)) > score) {
+                        score = tmpscore;
+                        valway.startx = x1;
+                        valway.starty = y1;
+                        valway.endx = i;
+                        valway.endy = j;
+                        got = 1;
+                    }
+                }
+            }
+        }
+    }
+    return;
+}
+
